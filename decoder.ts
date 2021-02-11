@@ -1,1 +1,17 @@
-export default function decode(symbols) {}
+import fs from "fs";
+import selectNeighbours from "./selectNeighbours";
+
+export default function decode() {
+  const sourceSymbols = [];
+  const x = JSON.parse(fs.readFileSync("testEncodedSymbols.json", "utf8"));
+  //   console.log(x);
+  // xor back into source blocks / packets / symbols / whatever
+  const sym = x.find((s) => s.degree === 1);
+
+  //TODO: how would we know the original number of source packets to pass in here? should we add it to each packet?
+  const sourcePacketIndex = selectNeighbours(sym.index, sym.degree, sym.k);
+  console.log({ sourcePacketIndex });
+  //   for (let i = 0; i < array.length; i++) {
+  //     const element = array[i];
+  //   }
+}

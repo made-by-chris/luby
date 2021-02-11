@@ -2,15 +2,19 @@ import {
   generateIdealDistribution,
   generateRobustDistribution,
 } from "./distributions";
+import fs from "fs";
+import selectNeighbours from "./selectNeighbours";
 
 class Symbol {
   index: Number;
   degree: Number;
   data: Array<Number>;
-  constructor(index, degree, data) {
+  K: Number;
+  constructor(index, degree, data, K) {
     this.index = index;
     this.degree = degree;
     this.data = data;
+    this.K = K;
   }
 }
 
@@ -29,13 +33,11 @@ function splitFile(file: Array<number>, blockSize: number) {
 }
 
 function choices(weights, k) {
-  console.log({ weights });
   const choice = () => {
     const randomNr = Math.random();
     let threshold = 0;
     let winner = null;
     for (var i = 0; i < weights.length; i++) {
-      console.log({ hmmm: weights[i], threshold, randomNr });
       threshold += weights[i];
       if (threshold > randomNr) {
         winner = i;
@@ -53,14 +55,8 @@ function choices(weights, k) {
   return _choices;
 }
 
-function getRandomDegrees(numberOfPackets, desiredNumberOfSymbols) {
-  return [
-    1,
-    ...choices(
-      generateRobustDistribution(numberOfPackets.length),
-      desiredNumberOfSymbols
-    ),
-  ];
+function getRandomDegrees(K: Number, desiredNumberOfSymbols: Number) {
+  return [1, ...choices(generateRobustDistribution(K), desiredNumberOfSymbols)];
 }
 
 export default function encode(
@@ -70,21 +66,21 @@ export default function encode(
 ) {
   // source symbols / packets
   const sourceSymbols = splitFile(file, blockSize);
-  const degreeDistribution = generateRobustDistribution(sourceSymbols.length);
-  const desiredNumberOfSymbols = Math.floor(sourceSymbols.length * 1.5);
-  const randomDegrees = getRandomDegrees(
-    degreeDistribution,
-    desiredNumberOfSymbols
-  );
+  const K = sourceSymbols.length;
+  const desiredNumberOfSymbols = Math.floor(K * 1.5);
+  const randomDegrees = getRandomDegrees(K, desiredNumberOfSymbols);
+
+  const encodedSymbols = [];
   for (var i = 0; i < desiredNumberOfSymbols; i++) {
-    selection_indexes, deg = generate_indexes(i, random_degrees[i], blocks_n)
-      1 2 3 4 5 6 7 8 9
-      | |
-      1 |
-      | |\
-      1 2 3 4 5 6 7 8 9 10 11 12 13 14
-    
-
-
+    // make each encoded symbol in here
+    let selectedNeighbours = selectNeighbours(i, randomDegrees[i], K);
+    selectedNeighbours = selectedNeighbours.map((i) => sourceSymbols[i]);
+    const xorNeighbours = [];
+    for (let i = 0; i < selectedNeighbours[0].length; i++) {
+      xorNeighbours.push(selectedNeighbours.reduce((a, b) => a[i] ^ b[i]));
+    }
+    encodedSymbols.push(new Symbol(i, randomDegrees[i], xorNeighbours, K));
+    // encodedSymbols.push(`i am  ${i} ${K}`);
   }
+  fs.writeFileSync("testEncodedSymbols.json", JSON.stringify(encodedSymbols));
 }
