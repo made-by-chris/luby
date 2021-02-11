@@ -1,0 +1,19 @@
+// steps
+
+// ENCODE
+// 1. get source symbols (k) ( get file as bufferArray )
+function makeDistribution(k) {
+  for (var i = 0; i <= k; i++) {}
+}
+
+0. generate degree distribution ( AKA. soliton distribution )
+1. choose degree d from degree distribution
+2. choose d of source symbols randomly
+3. encoding symbol = XOR of d chosen source symbol
+4. source symbols are 1kb long for example, and you put that in a packet together with a key that identifies how you generated it
+
+DECODE
+6. collect k*(1+ε) encoding symbols
+7. repeat until all source symbols are recovered
+8. find ENCODING symbols with exactly one unrecovered SOURCE SYMBOL neighbor (edge)
+9. XOR recovered neighbours of missing SOURCE SYMBOL, thats the value of that remaining unrecovered SOURCE SYMBOL
