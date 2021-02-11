@@ -1,6 +1,7 @@
 import encode from "./encoder";
 // import decode from "./decoder";
-import file from "./data.json";
+import file from "./testfiles/data.json";
 const filePath = process.env[3];
 
-encode(file, 1024);
+console.log(JSON.stringify(file));
+encode(file, 200);

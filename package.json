@@ -1,10 +1,11 @@
 {
-  "name": "flashforward",
+  "name": "LTJS",
   "version": "1.0.0",
   "description": "Generate fountain codes / erasure codes (Luby Transform, robust)",
   "main": "index.js",
   "scripts": {
-    "start": "tsc && node dist/index.js",
+    "start": "nodemon dist/index.js",
+    "watch": "tsc -w",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -22,7 +23,10 @@
   "author": "basiclaser",
   "license": "MIT",
   "devDependencies": {
+    "babar": "^0.2.0",
+    "nodemon": "^2.0.7",
     "tslint": "^5.12.1",
     "typescript": "^3.3.3"
-  }
+  },
+  "dependencies": {}
 }
