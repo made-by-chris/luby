@@ -3,7 +3,6 @@ import {
   generateRobustDistribution,
 } from "./distributions";
 import selectNeighbours from "./selectNeighbours";
-const fs = require("fs");
 
 class Symbol {
   index: Number;
@@ -76,8 +75,9 @@ export default function encode(
     let selectedNeighbours = selectNeighbours(i, randomDegrees[i], K);
     const xorNeighbours = [];
 
+    // TODO: do any degree>1 encoding symbols XOR with source symbol with degree=1
     if (selectedNeighbours.length === 1) {
-      xorNeighbours.push(sourceSymbols[selectedNeighbours[0]]);
+      xorNeighbours.push(...sourceSymbols[selectedNeighbours[0]]);
     } else {
       const arrayOfSelectedNeighbourValues = [];
       for (let i = 0; i < selectedNeighbours.length; i++) {
@@ -93,5 +93,5 @@ export default function encode(
     }
     encodedSymbols.push(new Symbol(i, randomDegrees[i], xorNeighbours, K));
   }
-  fs.writeFileSync("testEncodedSymbols.json", JSON.stringify(encodedSymbols));
+  return encodedSymbols;
 }

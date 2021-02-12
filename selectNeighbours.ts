@@ -18,7 +18,7 @@ export default function selectNeighbours(
 ) {
   // pseudorandomly shuffle array, take desired number of elements
   const seededRandom = new Random(indexAsSeed);
-  console.log({ indexAsSeed, numberOfNeighborsToGet, K });
+  // console.log({ indexAsSeed, numberOfNeighborsToGet, K });
   const nums = [];
   for (let i = 0; i < K; i++) {
     nums[i] = i;
