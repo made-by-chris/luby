@@ -1,5 +1,5 @@
-import fs from "fs";
 import selectNeighbours from "./selectNeighbours";
+const fs = require("fs");
 
 export default function decode() {
   const sourceSymbols = [];
@@ -9,7 +9,7 @@ export default function decode() {
   const sym = x.find((s) => s.degree === 1);
 
   //TODO: how would we know the original number of source packets to pass in here? should we add it to each packet?
-  const sourcePacketIndex = selectNeighbours(sym.index, sym.degree, sym.k);
+  const sourcePacketIndex = selectNeighbours(sym.index, sym.degree, sym.K);
   console.log({ sourcePacketIndex });
   //   for (let i = 0; i < array.length; i++) {
   //     const element = array[i];
