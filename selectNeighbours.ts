@@ -24,7 +24,8 @@ export default function selectNeighbours(
     nums[i] = i;
   }
   shuffle(nums, { rng: seededRandom.nextFloat.bind(seededRandom) });
-  const res = nums.slice(0, numberOfNeighborsToGet).map((j) => j);
+
+  const res = nums.slice(0, numberOfNeighborsToGet);
 
   return res;
 }

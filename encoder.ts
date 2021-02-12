@@ -2,8 +2,8 @@ import {
   generateIdealDistribution,
   generateRobustDistribution,
 } from "./distributions";
-import fs from "fs";
 import selectNeighbours from "./selectNeighbours";
+const fs = require("fs");
 
 class Symbol {
   index: Number;
@@ -74,12 +74,25 @@ export default function encode(
   for (var i = 0; i < desiredNumberOfSymbols; i++) {
     // make each encoded symbol in here
     let selectedNeighbours = selectNeighbours(i, randomDegrees[i], K);
-    selectedNeighbours = selectedNeighbours.map((i) => sourceSymbols[i]);
     const xorNeighbours = [];
-    for (let i = 0; i < selectedNeighbours[0].length; i++) {
-      xorNeighbours.push(selectedNeighbours.reduce((a, b) => a[i] ^ b[i]));
+
+    if (selectedNeighbours.length === 1) {
+      xorNeighbours.push(sourceSymbols[selectedNeighbours[0]]);
+    } else {
+      const arrayOfSelectedNeighbourValues = [];
+      for (let i = 0; i < selectedNeighbours.length; i++) {
+        arrayOfSelectedNeighbourValues.push(
+          sourceSymbols[selectedNeighbours[i]]
+        );
+      }
+      for (let j = 0; j < arrayOfSelectedNeighbourValues[0].length; j++) {
+        xorNeighbours.push(
+          arrayOfSelectedNeighbourValues.reduce((a, b) => a[j] ^ b[j])
+        );
+      }
     }
     encodedSymbols.push(new Symbol(i, randomDegrees[i], xorNeighbours, K));
+
     // encodedSymbols.push(`i am  ${i} ${K}`);
   }
   fs.writeFileSync("testEncodedSymbols.json", JSON.stringify(encodedSymbols));
