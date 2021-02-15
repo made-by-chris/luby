@@ -6,11 +6,9 @@ import { encode, decode } from "./index";
 // RUN TEST ENCODING
 const file = fs.readFileSync("testfiles/test.txt", "utf8")
 var enc = new TextEncoder(); // always utf-8
-console.log(enc.encode(file))
-
-// const encodedSymbols = encode(enc.encode(file), 200);
+const encodedSymbols = encode(enc.encode(file), 200);
 // console.log(encodedSymbols)
-// fs.writeFileSync("testEncodedSymbols.json", JSON.stringify(encodedSymbols));
+fs.writeFileSync("testEncodedSymbols.json", JSON.stringify(encodedSymbols));
 
 // // RUN TEST DECODING
 const encodedSymbols2 = JSON.parse(

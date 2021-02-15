@@ -23,7 +23,7 @@ function splitFile(file: Uint8Array, blockSize: number) {
   for (var i = 0; i <= file.length; i+=blockSize) {
     blocks.push(Array.from(file.slice(i, i+blockSize)));
   }
-fs.writeFileSync("aaaa.json", Array.from(file))
+fs.writeFileSync("aaaa.json", JSON.stringify(file))
 // pad last block if smaller than blocksize
   if (blocks[blocks.length - 1].length < blockSize) {
     blocks[blocks.length - 1] = blocks[blocks.length - 1].concat(

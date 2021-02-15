@@ -114,12 +114,12 @@ export default function decode(encodedSymbols) {
     console.log(17,"first symbol found, decoding..");
     traverse(firstSymbol.eid);
     console.log(18,JSON.stringify(sourceGraph));
-    const cleanedUpGraph = sourceGraph
+
+    const cleanedUpGraph = [...sourceGraph
     .sort((a,b)=>a.sid-b.sid)
-    .map(b=>{
-      return b.data
-    }).flat()
-    fs.writeFileSync("bbbb.json",  Buffer.from(arr));
+    .map(b=>b.data)][0]
+    
+    fs.writeFileSync("bbbb.json",  JSON.stringify(cleanedUpGraph));
 
     console.log(19,cleanedUpGraph)
     var enc = new TextDecoder("utf-8");
