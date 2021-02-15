@@ -3,11 +3,12 @@ import {
   generateRobustDistribution,
 } from "./distributions";
 import selectNeighbours from "./selectNeighbours";
+import fs from "fs";
 
 class Symbol {
   index: Number;
   degree: Number;
-  data: Array<Number>;
+  data: Uint8Array;
   K: Number;
   constructor(index, degree, data, K) {
     this.index = index;
@@ -17,12 +18,13 @@ class Symbol {
   }
 }
 
-function splitFile(file: Array<number>, blockSize: number) {
+function splitFile(file: Uint8Array, blockSize: number) {
   let blocks = [];
-  for (var i = 0; i <= file.length; i++) {
-    blocks.push(file.splice(0, blockSize));
+  for (var i = 0; i <= file.length; i+=blockSize) {
+    blocks.push(Array.from(file.slice(i, i+blockSize)));
   }
-  // pad last block if smaller than blocksize
+fs.writeFileSync("aaaa.json", Array.from(file))
+// pad last block if smaller than blocksize
   if (blocks[blocks.length - 1].length < blockSize) {
     blocks[blocks.length - 1] = blocks[blocks.length - 1].concat(
       new Array(blockSize - blocks[blocks.length - 1].length).fill(0)
@@ -59,7 +61,7 @@ function getRandomDegrees(K: Number, desiredNumberOfSymbols: Number) {
 }
 
 export default function encode(
-  file: Array<number>,
+  file: Uint8Array,
   blockSize: number,
   seed: string = "None"
 ) {

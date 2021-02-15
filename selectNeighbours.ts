@@ -1,6 +1,6 @@
 import shuffle from "shuffle-array";
 function Random(seed) {
-  this._seed = seed % 2147483647;
+  this._seed = seed*1000000 % 2147483647;
   if (this._seed <= 0) this._seed += 2147483646;
 }
 Random.prototype.next = function () {
@@ -8,7 +8,7 @@ Random.prototype.next = function () {
 };
 Random.prototype.nextFloat = function (opt_minOrMax, opt_max) {
   // We know that result of next() will be 1 to 2147483646 (inclusive).
-  return (this.next() - 1) / 2147483646;
+  return (this.next() ) / 2147483646;
 };
 
 export default function selectNeighbours(
@@ -25,6 +25,5 @@ export default function selectNeighbours(
   }
   shuffle(nums, { rng: seededRandom.nextFloat.bind(seededRandom) });
   const res = nums.slice(0, numberOfNeighborsToGet);
-
   return res;
 }

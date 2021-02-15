@@ -1,18 +1,23 @@
-import file from "./testfiles/data.json";
 import fs from "fs";
 import { encode, decode } from "./index";
 // const filePath = process.env[3];
 // const encodedSymbols = encode(file, 200);
 
 // RUN TEST ENCODING
-// const encodedSymbols = encode(file, 200);
+const file = fs.readFileSync("testfiles/test.txt", "utf8")
+var enc = new TextEncoder(); // always utf-8
+console.log(enc.encode(file))
+
+// const encodedSymbols = encode(enc.encode(file), 200);
+// console.log(encodedSymbols)
 // fs.writeFileSync("testEncodedSymbols.json", JSON.stringify(encodedSymbols));
 
-// RUN TEST DECODING
+// // RUN TEST DECODING
 const encodedSymbols2 = JSON.parse(
   fs.readFileSync("testEncodedSymbols.json", "utf8")
 );
 const result = decode(encodedSymbols2);
+
 
 // const {
 //   generateIdealDistribution,

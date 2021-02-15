@@ -8,6 +8,9 @@
     "test": "nodemon dist/test.js",
     "watch": "tsc -w"
   },
+  "nodemonConfig": {
+    "ignore": ["*.txt", "*.json"]
+  },
   "keywords": [
     "luby",
     "lt",
