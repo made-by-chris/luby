@@ -53,6 +53,7 @@ export default function decode(encodedSymbols) {
   // return symbols
 
   const ax = (a, b) => {
+    console.log(a.length, b.length);
     const res = [];
     for (let j = 0; j < a.length; j++) {
       res[j] = a[j] ^ b[j];
@@ -77,15 +78,18 @@ export default function decode(encodedSymbols) {
 
   //TODO: SID and EIDS are fuck
   let loop = 0;
+
   function traverse(eid) {
     // we traverse to an encoded symbol which hopefully has 1 degree remaining
     loop++;
     if (loop > 10) return;
-    console.log("traverse was called", eid);
+    //TODO: it gets stuck on EID 9
     const encodedSymbol = encodedGraph.find((s) => s.eid === eid);
+    console.log("traverse was called", eid, encodedSymbol.nids);
     if (encodedSymbol.nids.length > 1) {
       // if this encoded symbol isnt ready to decode, we skip it
       const next = encodedGraph.find((s) => s.degree === 1);
+      console.log("next symbol is", next);
       if (!next) {
         console.log("FAILED - no remaining encoded symbols with degree of one");
       } else {
@@ -96,33 +100,34 @@ export default function decode(encodedSymbols) {
       const sourceSymbol = sourceGraph.find(
         (s) => s.sid === encodedSymbol.nids[0]
       );
-      if (!sourceSymbol) {
+      if (sourceSymbol) {
+        return;
+      } else {
         // we're ready to decode here - theres only 1 SID and it hasnt been decoded yet.
-        const decodedSymbol = Object.assign(encodedSymbols)
+        const decodedSymbol = Object.assign(encodedSymbol);
         decodedSymbol.sid = encodedSymbol.nids[0];
         sourceGraph.push(decodedSymbol);
 
-        // now we update neighbours with the same SID in their nids array
+        // on neighbours with same SID in nids, need to:
+        // degree -1
+        // XOR with decodedSymbol.data
+        // remove decodedSymbol.sid from nids
+        // IF only one nid-sid left, traverse to it
         const neighbours = encodedGraph.filter((neighbour) =>
           neighbour.nids.includes(decodedSymbol.sid)
         );
-      }
-    }
-        const neighbours = encodedGraph.filter((oes) =>
-          oes.nids.includes(symbol.sid)
-        );
-        // Xor symbol.data from each one
+
         neighbours.forEach((n) => {
-          let updatedNeighbour = n;
-          console.log("before changes", n.eid, n.nids);
-          updatedNeighbour.data = ax(symbol.data, updatedNeighbour.data);
-          updatedNeighbour.nids = n.nids.filter((id) => id !== sid);
-          updatedNeighbour.degree = n.degree - 1;
+          const un = Object.assign(n);
+          console.log("before changes", un.eid, un.nids);
+          un.data = ax(decodedSymbol.data, un.data);
+          un.nids = un.nids.filter((id) => id !== decodedSymbol.sid);
+          un.degree = un.degree - 1;
           encodedGraph = encodedGraph.map((es) =>
-            es.eid === n.eid ? updatedNeighbour : es
+            es.eid === un.eid ? un : es
           );
-          console.log("after changes", n.eid, n.nids);
-          if (updatedNeighbour.nids.length === 1) {
+          console.log("after changes", un.eid, un.nids);
+          if (un.nids.length === 1) {
             console.log("AAAA");
             traverse(n.nids[0]);
           } else {
@@ -160,6 +165,6 @@ export default function decode(encodedSymbols) {
   } else {
     console.log("first symbol found, decoding..");
     traverse(firstSymbol.eid);
-    // console.log(sourceGraph);
+    console.log(sourceGraph.length);
   }
 }
