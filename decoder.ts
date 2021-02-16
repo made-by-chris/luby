@@ -31,9 +31,8 @@ export default function decode(encodedSymbols) {
 
     const decodedSymbol = {data:encodedSymbol.data, sid: encodedSymbol.nids[0]}
     sourceGraph.push(decodedSymbol);
-    if(sourceGraph.length >= K) return
-
-    encodedGraph.filter((neighbour) =>
+    
+    sourceGraph.length < K && encodedGraph.filter((neighbour) =>
       neighbour.nids.includes(decodedSymbol.sid)
     ).forEach((n) => {
       const un = Object.assign(n,{
