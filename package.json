@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node dist/index.js",
-    "test": "nodemon dist/test.js",
+    "test": "node dist/test.js",
     "watch": "tsc -w"
   },
   "nodemonConfig": {
