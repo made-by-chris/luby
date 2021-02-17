@@ -1,4 +1,5 @@
 import selectNeighbours from "./selectNeighbours";
+
 export default function decode(encodedSymbols) {
   const K = encodedSymbols[0].K;
   const sourceGraph = [];
@@ -17,10 +18,12 @@ export default function decode(encodedSymbols) {
 
   traverse(firstSymbol); // traversal starts here
   if(sourceGraph.length !== K) throw new Error("No remaining encoded symbols with one degree. Cannot decode. Get more packets!")
-  return sourceGraph // traversal ends here
+  const res = sourceGraph // traversal ends here
   .sort((a,b)=>a.sid-b.sid)
   .map(b=>b.data)
   .reduce((a,b)=>a.concat(b))
+  while (!res[res.length - 1 ]) res.pop();
+  return res
 
   function traverse(encodedSymbol) {
     if(sourceGraph.length >= K) return
