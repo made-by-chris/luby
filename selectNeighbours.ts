@@ -8,7 +8,7 @@ Random.prototype.next = function () {
 };
 Random.prototype.nextFloat = function (opt_minOrMax, opt_max) {
   // We know that result of next() will be 1 to 2147483646 (inclusive).
-  return (this.next() ) / 2147483646;
+  return (this.next()-1 ) / 2147483646;
 };
 
 export default function selectNeighbours(
