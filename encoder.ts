@@ -2,7 +2,6 @@ import {
   generateRobustDistribution,
 } from "./distributions";
 import selectNeighbours from "./selectNeighbours";
-import fs from "fs";
 
 class Symbol {
   index: Number;
@@ -62,21 +61,11 @@ export default function encode(
   blockSize: number,
   seed: string = "None"
 ) {
-  // source symbols / packets
   const sourceSymbols = splitFile(file, blockSize);
   const K = sourceSymbols.length;
   const desiredNumberOfSymbols = Math.floor(K * 1.5); //TODO: make this more sciency
   const randomDegrees = getRandomDegrees(K, desiredNumberOfSymbols);
 
-  const encodedSymbols = [];
-  fs.writeFileSync("testfiles/snrl", ``)
-  
-  const fakeXorStartData = [
-    [0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [1,1,1,1,1,1,1,1,1,1,1,1,1],
-    [3,3,3,3,3,3,3,3,3,3,3,3,3],
-    [4,4,4,4,4,4,4,4,4,4,4,4,4],
-  ]
   const xaEncode = (arar) => arar.reduce((a,b)=>{
     const out = []
     for (let i = 0; i < arar[0].length; i++) {
@@ -84,18 +73,13 @@ export default function encode(
     }
     return out
   })
-  console.log(xaEncode(fakeXorStartData))
 
-  // were making symbols
-  // each symbol is a result of XORing multiple original symbols
   const symbols = []
   for (let i = 0; i < desiredNumberOfSymbols; i++) {
     const selectedNeighbours = selectNeighbours(i, randomDegrees[i], K)
     const data = xaEncode(selectedNeighbours.map(sn => sourceSymbols[sn]))
     symbols.push(new Symbol(i,selectedNeighbours.length, data, K))
   }
-
-  fs.writeFileSync("testfiles/ENCODEfakeXOR", JSON.stringify(symbols,null,4))
 
   return symbols;
 }

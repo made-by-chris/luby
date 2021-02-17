@@ -1,13 +1,9 @@
 import selectNeighbours from "./selectNeighbours";
-import fs from "fs";
-
 export default function decode(encodedSymbols) {
   const K = encodedSymbols[0].K;
   const sourceGraph = [];
-  fs.writeFileSync("testfiles/DECODEsnrl", ``)
   let encodedGraph = encodedSymbols.map((s) => {
     const selectedNeighbours = selectNeighbours(s.index, s.degree, s.K)
-    fs.appendFileSync("testfiles/DECODEsnrl", `${s.index} ${s.degree} ${s.K} ${selectedNeighbours}\r\n`)
     return {
       eid: s.index,
       nids: selectedNeighbours,
@@ -20,18 +16,13 @@ export default function decode(encodedSymbols) {
   if (!firstSymbol) throw new Error("No encoded symbol with one degree. Cannot decode. Get more packets!")
 
   traverse(firstSymbol); // traversal starts here
-  console.log(sourceGraph.length, K)
   if(sourceGraph.length !== K) throw new Error("No remaining encoded symbols with one degree. Cannot decode. Get more packets!")
   return sourceGraph // traversal ends here
   .sort((a,b)=>a.sid-b.sid)
   .map(b=>b.data)
-  .reduce((a,b)=>{
-    // console.log(sourceGraph.length, a.length,b.length)
-    return a.concat(b)
-  })
+  .reduce((a,b)=>a.concat(b))
 
   function traverse(encodedSymbol) {
-    console.log(sourceGraph.length, K)
     if(sourceGraph.length >= K) return
     const alreadyDecoded = sourceGraph.find((s) => s.sid === encodedSymbol.nids[0]);
     if (alreadyDecoded) return
