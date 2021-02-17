@@ -1,14 +1,21 @@
 import selectNeighbours from "./selectNeighbours";
+import fs from "fs";
 
 export default function decode(encodedSymbols) {
   const K = encodedSymbols[0].K;
   const sourceGraph = [];
-  let encodedGraph = encodedSymbols.map((s) => ({
-    eid: s.index,
-    nids: selectNeighbours(s.index, s.degree, s.K),
-    data: s.data,
-    degree: s.degree,
-  }));
+  fs.writeFileSync("testfiles/DECODEsnrl", ``)
+  let encodedGraph = encodedSymbols.map((s) => {
+    const selectedNeighbours = selectNeighbours(s.index, s.degree, s.K)
+    fs.appendFileSync("testfiles/DECODEsnrl", `${s.index} ${s.degree} ${s.K} ${selectedNeighbours}\r\n`)
+    return {
+      eid: s.index,
+      nids: selectedNeighbours,
+      data: s.data,
+      degree: s.degree,
+    }
+  });
+  
   const firstSymbol = encodedGraph.find((s) => s.degree === 1);
   if (!firstSymbol) throw new Error("No encoded symbol with one degree. Cannot decode. Get more packets!")
 

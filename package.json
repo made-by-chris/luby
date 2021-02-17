@@ -9,7 +9,10 @@
     "watch": "tsc -w"
   },
   "nodemonConfig": {
-    "ignore": ["*.txt", "*.json"]
+    "ignore": [
+      "*.txt",
+      "*.json"
+    ]
   },
   "keywords": [
     "luby",

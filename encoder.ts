@@ -1,5 +1,4 @@
 import {
-  generateIdealDistribution,
   generateRobustDistribution,
 } from "./distributions";
 import selectNeighbours from "./selectNeighbours";
@@ -20,11 +19,9 @@ class Symbol {
 
 function splitFile(file: Uint8Array, blockSize: number) {
   let blocks = [];
-  for (var i = 0; i <= file.length; i+=blockSize) {
+  for (var i = 0; i < file.length; i+=blockSize) {
     blocks.push(Array.from(file.slice(i, i+blockSize)));
   }
-fs.writeFileSync("aaaa.json", JSON.stringify(file))
-// pad last block if smaller than blocksize
   if (blocks[blocks.length - 1].length < blockSize) {
     blocks[blocks.length - 1] = blocks[blocks.length - 1].concat(
       new Array(blockSize - blocks[blocks.length - 1].length).fill(0)
@@ -68,16 +65,18 @@ export default function encode(
   // source symbols / packets
   const sourceSymbols = splitFile(file, blockSize);
   const K = sourceSymbols.length;
-  const desiredNumberOfSymbols = Math.floor(K * 1.5);
+  const desiredNumberOfSymbols = Math.floor(K * 1.5); //TODO: make this more sciency
   const randomDegrees = getRandomDegrees(K, desiredNumberOfSymbols);
 
   const encodedSymbols = [];
+  fs.writeFileSync("testfiles/snrl", ``)
   for (var i = 0; i < desiredNumberOfSymbols; i++) {
     // make each encoded symbol in here
     let selectedNeighbours = selectNeighbours(i, randomDegrees[i], K);
+    fs.appendFileSync("testfiles/ENCODEsnrl", `${i} ${randomDegrees[i]} ${K} ${selectedNeighbours}\r\n`)
+    // console.log({selectedNeighbours})
     const xorNeighbours = [];
 
-    // TODO: do any degree>1 encoding symbols XOR with source symbol with degree=1
     if (selectedNeighbours.length === 1) {
       xorNeighbours.push(...sourceSymbols[selectedNeighbours[0]]);
     } else {
@@ -87,6 +86,8 @@ export default function encode(
           sourceSymbols[selectedNeighbours[i]]
         );
       }
+
+      //TODO: test this with fake data (ENCODER and DECODER)
       for (let j = 0; j < arrayOfSelectedNeighbourValues[0].length; j++) {
         xorNeighbours.push(
           arrayOfSelectedNeighbourValues.reduce((a, b) => a[j] ^ b[j])
