@@ -70,31 +70,32 @@ export default function encode(
 
   const encodedSymbols = [];
   fs.writeFileSync("testfiles/snrl", ``)
-  for (var i = 0; i < desiredNumberOfSymbols; i++) {
-    // make each encoded symbol in here
-    let selectedNeighbours = selectNeighbours(i, randomDegrees[i], K);
-    fs.appendFileSync("testfiles/ENCODEsnrl", `${i} ${randomDegrees[i]} ${K} ${selectedNeighbours}\r\n`)
-    // console.log({selectedNeighbours})
-    const xorNeighbours = [];
-
-    if (selectedNeighbours.length === 1) {
-      xorNeighbours.push(...sourceSymbols[selectedNeighbours[0]]);
-    } else {
-      const arrayOfSelectedNeighbourValues = [];
-      for (let i = 0; i < selectedNeighbours.length; i++) {
-        arrayOfSelectedNeighbourValues.push(
-          sourceSymbols[selectedNeighbours[i]]
-        );
-      }
-
-      //TODO: test this with fake data (ENCODER and DECODER)
-      for (let j = 0; j < arrayOfSelectedNeighbourValues[0].length; j++) {
-        xorNeighbours.push(
-          arrayOfSelectedNeighbourValues.reduce((a, b) => a[j] ^ b[j])
-        );
-      }
+  
+  const fakeXorStartData = [
+    [0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [1,1,1,1,1,1,1,1,1,1,1,1,1],
+    [3,3,3,3,3,3,3,3,3,3,3,3,3],
+    [4,4,4,4,4,4,4,4,4,4,4,4,4],
+  ]
+  const xaEncode = (arar) => arar.reduce((a,b)=>{
+    const out = []
+    for (let i = 0; i < arar[0].length; i++) {
+      out.push(a[i] ^ b[i])
     }
-    encodedSymbols.push(new Symbol(i, randomDegrees[i], xorNeighbours, K));
+    return out
+  })
+  console.log(xaEncode(fakeXorStartData))
+
+  // were making symbols
+  // each symbol is a result of XORing multiple original symbols
+  const symbols = []
+  for (let i = 0; i < desiredNumberOfSymbols; i++) {
+    const selectedNeighbours = selectNeighbours(i, randomDegrees[i], K)
+    const data = xaEncode(selectedNeighbours.map(sn => sourceSymbols[sn]))
+    symbols.push(new Symbol(i,selectedNeighbours.length, data, K))
   }
-  return encodedSymbols;
+
+  fs.writeFileSync("testfiles/ENCODEfakeXOR", JSON.stringify(symbols,null,4))
+
+  return symbols;
 }

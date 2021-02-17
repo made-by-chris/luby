@@ -20,13 +20,13 @@ export default function decode(encodedSymbols) {
   if (!firstSymbol) throw new Error("No encoded symbol with one degree. Cannot decode. Get more packets!")
 
   traverse(firstSymbol); // traversal starts here
-  console.log(sourceGraph.map(e=>e.sid))
+  console.log(sourceGraph.length, K)
   if(sourceGraph.length !== K) throw new Error("No remaining encoded symbols with one degree. Cannot decode. Get more packets!")
   return sourceGraph // traversal ends here
   .sort((a,b)=>a.sid-b.sid)
   .map(b=>b.data)
   .reduce((a,b)=>{
-    console.log(sourceGraph.length, a.length,b.length)
+    // console.log(sourceGraph.length, a.length,b.length)
     return a.concat(b)
   })
 
