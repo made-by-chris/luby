@@ -4,9 +4,15 @@
   "description": "Generate fountain codes / erasure codes (Luby Transform, robust)",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon dist/index.js",
-    "test": "nodemon dist/test.js",
+    "start": "node dist/index.js",
+    "test": "node dist/test.js",
     "watch": "tsc -w"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "*.txt",
+      "*.json"
+    ]
   },
   "keywords": [
     "luby",
@@ -30,6 +36,7 @@
     "typescript": "^3.3.3"
   },
   "dependencies": {
+    "colors": "^1.4.0",
     "shuffle-array": "^1.0.1",
     "treeify": "^1.1.0"
   }

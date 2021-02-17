@@ -1,55 +1,57 @@
 import selectNeighbours from "./selectNeighbours";
-import treeify from "treeify";
-
 export default function decode(encodedSymbols) {
-  const sourceSymbols = [];
-  // xor back into source blocks / packets / symbols / whatever
-  const sym = encodedSymbols.find((s) => s.degree === 1);
-  const K = sym.K;
-  const sourcePacketIndex = selectNeighbours(sym.index, sym.degree, sym.K);
-  console.log({ sourcePacketIndex });
-  console.log(encodedSymbols.map((es) => es.data.length));
-  const decodedSymbols = [];
+  const K = encodedSymbols[0].K;
+  const sourceGraph = [];
+  let encodedGraph = encodedSymbols.map((s) => {
+    const selectedNeighbours = selectNeighbours(s.index, s.degree, s.K)
+    return {
+      eid: s.index,
+      nids: selectedNeighbours,
+      data: s.data,
+      degree: s.degree,
+    }
+  });
+  
+  const firstSymbol = encodedGraph.find((s) => s.degree === 1);
+  if (!firstSymbol) throw new Error("No encoded symbol with one degree. Cannot decode. Get more packets!")
 
-  // TODO: do any degree>1 encoding symbols XOR with source symbol with degree=1
-  // const neighboursOfDegreeOneSourceSymbol = selectNeighbours(
-  //   sym.index,
-  //   1,
-  //   Math.floor(K * 1.5)
-  // );
-  // console.log(neighboursOfDegreeOneSourceSymbol);
-  let inc = 0;
-  while (false) {
-    //decodedSymbols.length < K) {
-    inc++;
-    const neighboursOfDegreeOneSourceSymbol = selectNeighbours(
-      inc,
-      inc,
-      Math.floor(K * 1.5)
-    );
-    decodedSymbols.push(neighboursOfDegreeOneSourceSymbol);
-    //TODO: program recursive traversal function
+  traverse(firstSymbol); // traversal starts here
+  if(sourceGraph.length !== K) throw new Error("No remaining encoded symbols with one degree. Cannot decode. Get more packets!")
+  return sourceGraph // traversal ends here
+  .sort((a,b)=>a.sid-b.sid)
+  .map(b=>b.data)
+  .reduce((a,b)=>a.concat(b))
+
+  function traverse(encodedSymbol) {
+    if(sourceGraph.length >= K) return
+    const alreadyDecoded = sourceGraph.find((s) => s.sid === encodedSymbol.nids[0]);
+    if (alreadyDecoded) return
+
+    const decodedSymbol = {data:encodedSymbol.data, sid: encodedSymbol.nids[0]}
+    sourceGraph.push(decodedSymbol);
+    
+    sourceGraph.length < K && encodedGraph.filter((neighbour) =>
+      neighbour.nids.includes(decodedSymbol.sid)
+    ).forEach((n) => {
+      const un = Object.assign(n,{
+        data: ax(decodedSymbol.data, n.data),
+        nids: n.nids.filter((id) => id !== decodedSymbol.sid),
+        degree: n.degree - 1
+      });
+      encodedGraph = encodedGraph.map(es => es.eid === un.eid ? un : es)
+      un.nids.length === 1 ? traverse(n) : next()
+    });
+    sourceGraph.length < K && next()
   }
-  const tree = [
-    { id: 1, neighbours: [1, 2], data: "test test test 0" },
-    { id: 2, neighbours: [1, 2, 4], data: "test test test 1" },
-    { id: 3, neighbours: [1, 4], data: "test test test 2" },
-    { id: 4, neighbours: [3], data: "test test test 3" },
-    { id: 5, neighbours: [2, 4], data: "test test test 4" },
-    { id: 6, neighbours: [1, 2], data: "test test test 5" },
-  ];
-
-  function traverse(id, data) {
-    console.log(id);
-    if (data.length >= tree.length) return data;
-    const currentNode = tree.find((n) => n.id === id);
-    const asIds = data.map((e) => e);
-
-    return currentNode.neighbours.map((nextId) =>
-      traverse(nextId, [...data, id])
-    );
+  
+  function ax(a: Array<number>, b: Array<number>) {
+    const res = [];
+    for (let j = 0; j < a.length; j++) {res[j] = a[j] ^ b[j]}
+    return res;
+  };
+  
+  function next() {
+    const next = encodedGraph.find((s) => s.degree === 1);
+    next && traverse(next)
   }
-  const result = traverse(4, []);
-  console.table(JSON.stringify(result));
-  console.log(treeify.asTree(result, true));
 }
