@@ -1,5 +1,5 @@
 {
-  "name": "LTJS",
+  "name": "lubyjs",
   "version": "1.0.0",
   "description": "Generate fountain codes / erasure codes (Luby Transform, robust)",
   "main": "index.js",

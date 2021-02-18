@@ -11,8 +11,6 @@ if (require.main === module) {
   } else {
     console.log(`using ${strategy} strategy`);
   }
-} else {
-  //   console.log("required as a module");
 }
 
 export { encode, decode };
