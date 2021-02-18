@@ -63,7 +63,7 @@ export default function encode(
 ) {
   const sourceSymbols = splitFile(file, blockSize);
   const K = sourceSymbols.length;
-  const desiredNumberOfSymbols = Math.floor(K * 1.5); //TODO: make this more sciency
+  const desiredNumberOfSymbols = Math.floor(K * 2); //TODO: make this more sciency
   const randomDegrees = getRandomDegrees(K, desiredNumberOfSymbols);
 
   const xaEncode = (arar) => arar.reduce((a,b)=>{
