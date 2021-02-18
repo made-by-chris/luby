@@ -15,7 +15,6 @@ export default function decode(encodedSymbols) {
   const firstSymbol = encodedGraph.find((s) => s.degree === 1);
   if (!firstSymbol) throw new Error("No encoded symbol with one degree. Cannot decode. Get more packets!")
 
-
   traverse(firstSymbol); // traversal starts here
   if(sourceGraph.length !== K) throw new Error("No remaining encoded symbols with one degree. Cannot decode. Get more packets!")
   const res = sourceGraph // traversal ends here
