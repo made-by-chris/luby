@@ -2,7 +2,7 @@ import fs from "fs";
 import { encode, decode } from "./index";
 
 // RUN TEST ENCODING
-const file = fs.readFileSync("testfiles/test.txt", "utf8")
+const file = fs.readFileSync("./testinput/test.txt", "utf8")
 var enc = new TextEncoder(); // always utf-8
 const encodedSymbols = encode(enc.encode(file), 256);
 fs.writeFileSync("testEncodedSymbols.json", JSON.stringify(encodedSymbols));
