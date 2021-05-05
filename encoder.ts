@@ -1,5 +1,4 @@
 import {
-  generateIdealDistribution,
   generateRobustDistribution,
 } from "./distributions";
 import selectNeighbours from "./selectNeighbours";
@@ -7,7 +6,7 @@ import selectNeighbours from "./selectNeighbours";
 class Symbol {
   index: Number;
   degree: Number;
-  data: Array<Number>;
+  data: Uint8Array;
   K: Number;
   constructor(index, degree, data, K) {
     this.index = index;
@@ -17,12 +16,11 @@ class Symbol {
   }
 }
 
-function splitFile(file: Array<number>, blockSize: number) {
+function splitFile(file: Uint8Array, blockSize: number) {
   let blocks = [];
-  for (var i = 0; i <= file.length; i++) {
-    blocks.push(file.splice(0, blockSize));
+  for (var i = 0; i < file.length; i+=blockSize) {
+    blocks.push(Array.from(file.slice(i, i+blockSize)));
   }
-  // pad last block if smaller than blocksize
   if (blocks[blocks.length - 1].length < blockSize) {
     blocks[blocks.length - 1] = blocks[blocks.length - 1].concat(
       new Array(blockSize - blocks[blocks.length - 1].length).fill(0)
@@ -59,11 +57,10 @@ function getRandomDegrees(K: Number, desiredNumberOfSymbols: Number) {
 }
 
 export default function encode(
-  file: Array<number>,
+  file: Uint8Array,
   blockSize: number,
   seed: string = "None"
 ) {
-  // source symbols / packets
   const sourceSymbols = splitFile(file, blockSize);
   const K = sourceSymbols.length;
   let desiredNumberOfSymbols = Math.floor(K * 1.7);
@@ -71,29 +68,20 @@ export default function encode(
 
   const randomDegrees = getRandomDegrees(K, desiredNumberOfSymbols);
 
-  const encodedSymbols = [];
-  for (var i = 0; i < desiredNumberOfSymbols; i++) {
-    // make each encoded symbol in here
-    let selectedNeighbours = selectNeighbours(i, randomDegrees[i], K);
-    const xorNeighbours = [];
-
-    // TODO: do any degree>1 encoding symbols XOR with source symbol with degree=1
-    if (selectedNeighbours.length === 1) {
-      xorNeighbours.push(...sourceSymbols[selectedNeighbours[0]]);
-    } else {
-      const arrayOfSelectedNeighbourValues = [];
-      for (let i = 0; i < selectedNeighbours.length; i++) {
-        arrayOfSelectedNeighbourValues.push(
-          sourceSymbols[selectedNeighbours[i]]
-        );
-      }
-      for (let j = 0; j < arrayOfSelectedNeighbourValues[0].length; j++) {
-        xorNeighbours.push(
-          arrayOfSelectedNeighbourValues.reduce((a, b) => a[j] ^ b[j])
-        );
-      }
+  const xaEncode = (arar) => arar.reduce((a,b)=>{
+    const out = []
+    for (let i = 0; i < arar[0].length; i++) {
+      out.push(a[i] ^ b[i])
     }
-    encodedSymbols.push(new Symbol(i, randomDegrees[i], xorNeighbours, K));
+    return out
+  })
+
+  const symbols = []
+  for (let i = 0; i < desiredNumberOfSymbols; i++) {
+    const selectedNeighbours = selectNeighbours(i, randomDegrees[i], K)
+    const data = xaEncode(selectedNeighbours.map(sn => sourceSymbols[sn]))
+    symbols.push(new Symbol(i,selectedNeighbours.length, data, K))
   }
-  return encodedSymbols;
+
+  return symbols;
 }
