@@ -66,7 +66,9 @@ export default function encode(
   // source symbols / packets
   const sourceSymbols = splitFile(file, blockSize);
   const K = sourceSymbols.length;
-  const desiredNumberOfSymbols = Math.floor(K * 1.5);
+  let desiredNumberOfSymbols = Math.floor(K * 1.7);
+  if (desiredNumberOfSymbols < 65) desiredNumberOfSymbols = 65;
+
   const randomDegrees = getRandomDegrees(K, desiredNumberOfSymbols);
 
   const encodedSymbols = [];
