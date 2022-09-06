@@ -1,6 +1,6 @@
 {
   "name": "luby",
-  "version": "1.0.3",
+  "version": "1.0.6",
   "description": "Generate fountain codes / erasure codes (Luby Transform, robust)",
   "main": "dist/index.js",
   "scripts": {
